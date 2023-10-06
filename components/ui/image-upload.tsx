@@ -38,8 +38,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ disabled, onChange, onRemove,
               <Button type="button" onClick={() => onRemove(url)} variant="destructive" size="icon">
                 <Trash className="h-4 w-4" />
               </Button>
-              <Image fill className="object-cover" alt="Image" src={url} />
             </div>
+            <Image fill className="object-cover" alt="Image" src={url} />
           </div>
         ))}
       </div>
