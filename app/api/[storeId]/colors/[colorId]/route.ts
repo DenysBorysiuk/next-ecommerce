@@ -59,7 +59,7 @@ export async function PATCH(
       return new NextResponse('Forbidden', { status: 403 });
     }
 
-    const color = await prismadb.color.updateMany({
+    const color = await prismadb.color.update({
       where: {
         id: params.colorId,
       },
@@ -102,7 +102,7 @@ export async function DELETE(
       return new NextResponse('Forbidden', { status: 403 });
     }
 
-    const color = await prismadb.color.deleteMany({
+    const color = await prismadb.color.delete({
       where: {
         id: params.colorId,
       },

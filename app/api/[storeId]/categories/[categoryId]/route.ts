@@ -59,7 +59,7 @@ export async function PATCH(
       return new NextResponse('Forbidden', { status: 403 });
     }
 
-    const category = await prismadb.category.updateMany({
+    const category = await prismadb.category.update({
       where: {
         id: params.categoryId,
       },

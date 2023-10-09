@@ -59,7 +59,7 @@ export async function PATCH(
       return new NextResponse('Forbidden', { status: 403 });
     }
 
-    const size = await prismadb.size.updateMany({
+    const size = await prismadb.size.update({
       where: {
         id: params.sizeId,
       },
@@ -102,7 +102,7 @@ export async function DELETE(
       return new NextResponse('Forbidden', { status: 403 });
     }
 
-    const size = await prismadb.size.deleteMany({
+    const size = await prismadb.size.delete({
       where: {
         id: params.sizeId,
       },
