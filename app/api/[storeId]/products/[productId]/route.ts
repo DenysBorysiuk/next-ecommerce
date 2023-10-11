@@ -36,22 +36,38 @@ export async function PATCH(
     const { userId } = auth();
     const body = await req.json();
 
-    const { label, imageUrl } = body;
+    const { name, price, categoryId, colorId, sizeId, images, isFeatured, isArchived } = body;
 
     if (!userId) {
       return new NextResponse('Unauthorized', { status: 401 });
     }
 
-    if (!label) {
-      return new NextResponse('Label is required', { status: 400 });
+    if (!name) {
+      return new NextResponse('Name is required', { status: 400 });
     }
 
-    if (!imageUrl) {
-      return new NextResponse('Image URl is required', { status: 400 });
+    if (!price) {
+      return new NextResponse('Price is required', { status: 400 });
+    }
+
+    if (!categoryId) {
+      return new NextResponse('Category id is required', { status: 400 });
+    }
+
+    if (!colorId) {
+      return new NextResponse('Color id is required', { status: 400 });
+    }
+
+    if (!sizeId) {
+      return new NextResponse('Size id is required', { status: 400 });
+    }
+
+    if (!images || !images.length) {
+      return new NextResponse('Images are required', { status: 400 });
     }
 
     if (!params.productId) {
-      return new NextResponse('Billboard Id id is required', { status: 400 });
+      return new NextResponse('Product id is required', { status: 400 });
     }
 
     const storeByUserId = await prismadb.store.findFirst({
@@ -65,19 +81,40 @@ export async function PATCH(
       return new NextResponse('Forbidden', { status: 403 });
     }
 
-    const billboard = await prismadb.billboard.updateMany({
+    await prismadb.product.update({
       where: {
         id: params.productId,
       },
       data: {
-        label,
-        imageUrl,
+        name,
+        price,
+        categoryId,
+        colorId,
+        sizeId,
+        isFeatured,
+        isArchived,
+        images: {
+          deleteMany: {},
+        },
       },
     });
 
-    return NextResponse.json(billboard);
+    const product = await prismadb.product.update({
+      where: {
+        id: params.productId,
+      },
+      data: {
+        images: {
+          createMany: {
+            data: [...images.map((image: { url: string }) => image)],
+          },
+        },
+      },
+    });
+
+    return NextResponse.json(product);
   } catch (error) {
-    console.log('[BILLBOARD_PATCH]', error);
+    console.log('[PRODUCT_PATCH]', error);
     return new NextResponse('Internal error', { status: 500 });
   }
 }
@@ -94,7 +131,7 @@ export async function DELETE(
     }
 
     if (!params.productId) {
-      return new NextResponse('Billboard id is required', { status: 400 });
+      return new NextResponse('Product id is required', { status: 400 });
     }
 
     const storeByUserId = await prismadb.store.findFirst({
@@ -108,15 +145,15 @@ export async function DELETE(
       return new NextResponse('Forbidden', { status: 403 });
     }
 
-    const billboard = await prismadb.billboard.deleteMany({
+    const product = await prismadb.product.deleteMany({
       where: {
         id: params.productId,
       },
     });
 
-    return NextResponse.json(billboard);
+    return NextResponse.json(product);
   } catch (error) {
-    console.log('[BILLBOARD_DELETE]', error);
+    console.log('[PRODUCT_DELETE]', error);
     return new NextResponse('Internal error', { status: 500 });
   }
 }
